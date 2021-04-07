@@ -1,8 +1,24 @@
-# Tecnica de encriptación
+# Lumen PHP Framework
 
-Existe una técnica de encriptación que ocupa una agencia para poder enviar instrucciones a sus agentes. Para enviar una instrucción, la agencia transmite un mensaje donde la instrucción aparece entre otros caracteres. Por ejemplo la instrucción CeseAlFuego puede ser enviada como XcamakCeseAlFuegoDLKmN. Al recibir el mensaje, los agentes (con la ayuda de un libro con todas las instrucciones posibles) determinan cual es la instrucción escondida en el mensaje. Máximo existe una instrucción escondida por mensaje aunque es posible que no haya ninguna instrucción en el mensaje.Desafortunadamente el transmisor que ocupan para el envío de los mensajes tiene una falla. En lugar de enviar los caracteres una sola vez, esta enviándolos una, dos o hasta tres veces. Por ejemplo, el mensaje anterior pudiera ser enviado así: XXcaaamakkCCessseAAllFueeegooDLLKmmNNN. Esto hace que sea más difícil para los agentes  el encontrar una instrucción. (Nota: Ninguna instrucción en el libro de instrucciones contiene dos letras iguales seguidas)El programa recibe dos instrucciones y un mensaje, y el resultado debe ser si existe o no una instrucción escondida en el mensaje.
+[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
+[![Total Downloads](https://img.shields.io/packagist/dt/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
+[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
+[![License](https://img.shields.io/packagist/l/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
 
-## Detalles de desarrollo
+Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
 
-Lenguaje de programacion: PHP.  
-Version: 7.4.
+## Official Documentation
+
+Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
+
+## Contributing
+
+Thank you for considering contributing to Lumen! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
