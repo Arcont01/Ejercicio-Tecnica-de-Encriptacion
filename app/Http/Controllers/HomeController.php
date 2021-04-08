@@ -24,7 +24,7 @@ class HomeController extends Controller
         }
 
         $file = $request->file('file');
-        $content =  file($file);
+        $content = file($file);
 
         $answer = $this->checkQuantities($content);
 
@@ -76,15 +76,17 @@ class HomeController extends Controller
             }
         }
 
-        if ($sizeThirdWord < 3 || $sizeThirdWord > 5000) {
-            return ['error' => 'El tamaño de la primera frase debe estar entre 3 y 5000 inclusive'];
-            if ($sizeThirdWord != count($content[2])) {
-                return ['error' => 'El tamaño dado no corresponde al tamaño de la frase'];
-                if (!preg_match('/[a-zA-Z0-9]/', $content[2])) {
-                    return ['error' => 'El texto encriptado unicamente puede ser alfanumerico'];
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $content[2])) {
+            return ['error' => 'El texto encriptado unicamente puede ser alfanumerico'];
+            if ($sizeThirdWord < 3 || $sizeThirdWord > 5000) {
+                return ['error' => 'El tamaño de la primera frase debe estar entre 3 y 5000 inclusive'];
+                if ($sizeThirdWord != count($content[2])) {
+                    return ['error' => 'El tamaño dado no corresponde al tamaño de la frase'];
+
                 }
             }
         }
+
 
         return ['content' => $content, 'sizeThirdWord' => $sizeThirdWord];
     }
@@ -95,7 +97,7 @@ class HomeController extends Controller
         $newArrayString = [];
         for ($i = 0; $i < $sizeEncryptedWord; $i++) {
             if ($i == 0) {
-                $newArrayString[] =  $arrayStringWord[$i];
+                $newArrayString[] = $arrayStringWord[$i];
             } else {
                 $j = $i - 1;
                 if ($arrayStringWord[$j] != $arrayStringWord[$i]) {
@@ -112,13 +114,13 @@ class HomeController extends Controller
 
         if (strpos($newString, $firstPhrase)) {
             $answers['firstPhrase'] = 'Si es la primera frase';
-        }else{
+        } else {
             $answers['firstPhrase'] = 'No es la primera frase';
         }
 
         if (strpos($newString, $secondPhrase)) {
             $answers['secondPhrase'] = 'Si es la segunda frase';
-        }else{
+        } else {
             $answers['secondPhrase'] = 'No es la seguna frase';
         }
 
