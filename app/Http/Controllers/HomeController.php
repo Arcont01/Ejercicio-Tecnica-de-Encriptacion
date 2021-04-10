@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\CustomException;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -19,39 +20,43 @@ class HomeController extends Controller
         ]);
 
         if ($validate->fails()) {
-            $data['errors'] = $validate->errors();
-            return view('home', $data);
+            $errors = $validate->errors();
+            throw new CustomException($errors->first());
         }
 
-        $file = $request->file('file');
-        $content = file($file);
+        try {
+            $file = $request->file('file');
+            $content = file($file);
 
-        $answer = $this->checkQuantities($content);
+            $answer = $this->checkQuantities($content);
 
-        if (array_key_exists('error', $answer)) {
-            $answer['error_requirements'] = $answer['error'];
-            return view('home', $answer);
+            $content = $answer['content'];
+            $sizeThirdWord = $answer['sizeThirdWord'];
+
+            $answer = $this->existWord($sizeThirdWord, $content);
+            return view('success', $answer);
+        } catch (\Throwable $th) {
+            \Log::error($th);
+            throw new CustomException('A acurrido un error inesperado');
         }
-
-        $content = $answer['content'];
-        $sizeThirdWord = $answer['sizeThirdWord'];
-
-        $answer = $this->existWord($sizeThirdWord, $content);
-
-        return view('success', $answer);
     }
 
     public function checkQuantities(array $content)
     {
+
+        if (count($content) > 4) {
+            throw new CustomException('El archivo no debe de contener mas de 4 lineas');
+        }
+
         $quantities = array_shift($content);
         $quantities = explode(" ", $quantities);
 
         if (count($quantities) != 3) {
-            return ['error' => 'Debe de tener 3 cantidades numericas la primera linea del archivo'];
+            throw new CustomException('Debe de tener 3 cantidades numericas la primera linea del archivo');
         }
 
         if (count($content) != 3) {
-            return ['error' => 'Debe de terner 3 frases el archivo despues de la primera linea'];
+            throw new CustomException('Debe de terner 3 frases el archivo despues de la primera linea');
         }
 
         $sizeFirstWord = (int)trim($quantities[0]);
@@ -62,31 +67,9 @@ class HomeController extends Controller
             $content[$key] = trim($item);
         }
 
-        if ($sizeFirstWord < 2 || $sizeFirstWord > 50) {
-            return ['error' => 'El tamaño de la primera frase debe estar entre 2 y 50 inclusive'];
-            if ($sizeFirstWord != count($content[0])) {
-                return ['error' => 'El tamaño dado no corresponde al tamaño de la frase'];
-            }
-        }
-
-        if ($sizeSecondWord < 2 || $sizeSecondWord > 50) {
-            return ['error' => 'El tamaño de la primera frase debe estar entre 2 y 50 inclusive'];
-            if ($sizeSecondWord != count($content[1])) {
-                return ['error' => 'El tamaño dado no corresponde al tamaño de la frase'];
-            }
-        }
-
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $content[2])) {
-            return ['error' => 'El texto encriptado unicamente puede ser alfanumerico'];
-            if ($sizeThirdWord < 3 || $sizeThirdWord > 5000) {
-                return ['error' => 'El tamaño de la primera frase debe estar entre 3 y 5000 inclusive'];
-                if ($sizeThirdWord != count($content[2])) {
-                    return ['error' => 'El tamaño dado no corresponde al tamaño de la frase'];
-
-                }
-            }
-        }
-
+        $this->checkPhrase($sizeFirstWord, $content[0], 'primera');
+        $this->checkPhrase($sizeSecondWord, $content[1], 'segunda');
+        $this->checkPhraseEncrypted($sizeThirdWord, $content[2]);
 
         return ['content' => $content, 'sizeThirdWord' => $sizeThirdWord];
     }
@@ -125,5 +108,35 @@ class HomeController extends Controller
         }
 
         return $answers;
+    }
+
+    public function checkPhrase(string $sizePhrase, string $phrase, string $numberPhrase)
+    {
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $phrase)) {
+            throw new CustomException('El texto de la ' . $numberPhrase . ' frase unicamente puede ser alfanumerico');
+        }
+
+        if ($sizePhrase < 2 || $sizePhrase > 50) {
+            throw new CustomException('El tamaño de la  ' . $numberPhrase . ' frase debe estar entre 2 y 50 inclusive');
+        }
+
+        if ($sizePhrase != strlen($phrase)) {
+            throw new CustomException('El tamaño dado no corresponde al tamaño de la ' . $numberPhrase . ' frase');
+        }
+    }
+
+    public function checkPhraseEncrypted(string $sizePhrase, string $phrase)
+    {
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $phrase)) {
+            throw new CustomException('El texto de la frase encriptada unicamente puede ser alfanumerico');
+        }
+
+        if ($sizePhrase < 3 || $sizePhrase > 5000) {
+            throw new CustomException('El tamaño de la frase encriptada debe estar entre 3 y 5000 inclusive');
+        }
+
+        if ($sizePhrase != strlen($phrase)) {
+            throw new CustomException('El tamaño dado no corresponde al tamaño de la frase encriptada');
+        }
     }
 }
